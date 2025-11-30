@@ -52,14 +52,14 @@ app.get("/meta/:type{(movie|series)}/:id", async (c) => {
   const { id } = c.req.param();
 
   const result = await getFullTitle(id.replace(".json", ""));
-  return c.json(result);
+  return c.json({ meta: result });
 });
 
 app.get("/catalog/:type{(movie|series)}/search/:query", async (c) => {
   const { type, query } = c.req.param();
   const cleanedQuery = query.replace("search=", "").replace(".json", "");
   const result = await search(cleanedQuery, type);
-  return c.json(result);
+  return c.json({ metas: result });
 });
 
 export default app;

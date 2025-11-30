@@ -152,13 +152,16 @@ const TitleFull = graphql(`
   }
 `);
 
-export async function getFullTitle(id: string) {
+export async function getFullTitle(
+  id: string
+): Promise<StremioMeta | Record<string, never>> {
   const result = await client.query(TitleFull, { id: id });
-  if (!result.data?.title) {
-    return null;
-  }
 
   const title = result.data?.title;
+
+  if (!title?.titleText?.text) {
+    return {};
+  }
 
   let videos;
 
@@ -218,7 +221,7 @@ export async function getFullTitle(id: string) {
   const meta = new StremioMeta({
     id: title.id,
     type: title.titleType?.canHaveEpisodes ? "series" : "movie",
-    name: title.titleText?.text!,
+    name: title.titleText?.text,
     genres: title.titleGenres?.genres?.flatMap((g) => g?.genre.text || []),
     poster: title.primaryImage?.url || undefined,
     description: title.plot?.plotText?.plainText || undefined,
@@ -295,7 +298,7 @@ export async function getFullTitle(id: string) {
       : undefined,
   });
 
-  return { meta };
+  return meta;
 }
 
 const Query = graphql(`
@@ -320,7 +323,10 @@ const Query = graphql(`
   }
 `);
 
-export async function search(text: string, type: string) {
+export async function search(
+  text: string,
+  type: string
+): Promise<StremioMeta[]> {
   const result = await client.query(Query, {
     search: {
       type: [MainSearchType.Title],
@@ -334,8 +340,9 @@ export async function search(text: string, type: string) {
       },
     },
   });
+
   if (!result.data?.mainSearch?.edges.length) {
-    return null;
+    return [];
   }
 
   const searchResults = result.data.mainSearch.edges.flatMap((r) => {
@@ -352,5 +359,5 @@ export async function search(text: string, type: string) {
     });
   });
 
-  return { metas: searchResults };
+  return searchResults;
 }
