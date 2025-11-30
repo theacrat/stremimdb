@@ -1,6 +1,7 @@
 import { Client, cacheExchange, fetchExchange, gql } from "@urql/core";
 import { graphql } from "./graphql/gql";
 import { StremioMeta, Video } from "./classes/StremioMeta";
+import { MainSearchTitleType, MainSearchType } from "./graphql/graphql";
 
 const client = new Client({
   url: "https://api.graphql.imdb.com/",
@@ -298,17 +299,19 @@ export async function getFullTitle(id: string) {
 }
 
 const Query = graphql(`
-  query Query($search: AdvancedTitleSearchConstraints) {
-    advancedTitleSearch(first: 20, constraints: $search) {
+  query Query($search: MainSearchOptions!) {
+    mainSearch(first: 20, options: $search) {
       edges {
         node {
-          title {
-            id
-            titleText {
-              text
-            }
-            primaryImage {
-              url
+          entity {
+            ... on Title {
+              id
+              titleText {
+                text
+              }
+              primaryImage {
+                url
+              }
             }
           }
         }
@@ -320,24 +323,27 @@ const Query = graphql(`
 export async function search(text: string, type: string) {
   const result = await client.query(Query, {
     search: {
-      titleTextConstraint: { searchTerm: text },
-      titleTypeConstraint: {
-        anyTitleTypeIds:
+      type: [MainSearchType.Title],
+      searchTerm: text,
+      titleSearchOptions: {
+        type: [
           type === "series"
-            ? ["tvSeries", "tvMiniSeries"]
-            : ["movie", "short", "tvMovie", "tvSpecial"],
+            ? MainSearchTitleType.Tv
+            : MainSearchTitleType.Movie,
+        ],
       },
     },
   });
-  if (!result.data?.advancedTitleSearch?.edges.length) {
+  if (!result.data?.mainSearch?.edges.length) {
     return null;
   }
 
-  const searchResults = result.data.advancedTitleSearch.edges.flatMap((r) => {
-    const title = r?.node.title;
-    if (!title?.titleText?.text) {
+  const searchResults = result.data.mainSearch.edges.flatMap((r) => {
+    const title = r?.node.entity;
+    if (title?.__typename !== "Title" || !title.titleText?.text) {
       return [];
     }
+
     return new StremioMeta({
       id: title.id,
       type: type,
