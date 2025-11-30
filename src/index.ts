@@ -1,0 +1,63 @@
+import { Hono } from "hono";
+import { getFullTitle, search } from "./imdb";
+
+const app = new Hono();
+
+app.get("/manifest.json", (c) => {
+  return c.json({
+    id: "pet.thea.stremimdb",
+    version: "1.0.0",
+    name: "StremIMDb",
+    description: "IMDb metadata in Stremio",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/575px-IMDB_Logo_2016.svg.png",
+    background:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/575px-IMDB_Logo_2016.svg.png",
+    catalogs: [
+      {
+        type: "movie",
+        id: "search",
+        name: "Movies",
+        extra: [
+          {
+            name: "search",
+            isRequired: true,
+          },
+        ],
+      },
+      {
+        type: "series",
+        id: "search",
+        name: "Series",
+        extra: [
+          {
+            name: "search",
+            isRequired: true,
+          },
+        ],
+      },
+    ],
+    resources: ["catalog", "meta"],
+    types: ["movie", "series"],
+    idPrefixes: ["tt"],
+    behaviorHints: {
+      configurable: false,
+      configurationRequired: false,
+    },
+  });
+});
+
+app.get("/meta/:type{(movie|series)}/:id", async (c) => {
+  const { id } = c.req.param();
+
+  const result = await getFullTitle(id.replace(".json", ""));
+  return c.json(result);
+});
+
+app.get("/catalog/:type{(movie|series)}/search/:query", async (c) => {
+  const { type, query } = c.req.param();
+  const cleanedQuery = query.replace("search=", "").replace(".json", "");
+  const result = await search(cleanedQuery, type);
+  return c.json(result);
+});
+
+export default app;
