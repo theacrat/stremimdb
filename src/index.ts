@@ -1,7 +1,9 @@
 import { Hono } from "hono";
 import { getFullTitle, search } from "./imdb";
+import { cors } from "hono/cors";
 
 const app = new Hono();
+app.use("*", cors({ origin: "*" }));
 
 app.get("/manifest.json", (c) => {
   return c.json({
