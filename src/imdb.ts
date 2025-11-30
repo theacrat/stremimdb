@@ -202,11 +202,11 @@ export async function getFullTitle(id: string) {
         ),
         thumbnail: e.node.primaryImage?.url || undefined,
         episode: e.node.series?.displayableEpisodeNumber?.episodeNumber?.text
-          ? parseInt(season)
+          ? parseInt(episode)
           : undefined,
         season: e.node.series?.displayableEpisodeNumber?.displayableSeason
           ?.season
-          ? parseInt(episode)
+          ? parseInt(season)
           : undefined,
         overview: e.node.plot?.plotText?.plainText || undefined,
       };
