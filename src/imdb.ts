@@ -1,11 +1,11 @@
-import { Client, cacheExchange, fetchExchange } from "@urql/core";
-import { graphql } from "./generated/graphql/gql";
 import { StremioMeta, Video } from "./classes/StremioMeta";
+import { graphql } from "./generated/graphql/gql";
 import {
 	MainSearchTitleType,
 	MainSearchType,
 } from "./generated/graphql/graphql";
 import { getImages, matchId } from "./tmdb";
+import { Client, cacheExchange, fetchExchange } from "@urql/core";
 
 const client = new Client({
 	url: "https://api.graphql.imdb.com/",

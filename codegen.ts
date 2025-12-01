@@ -8,12 +8,6 @@ const config: CodegenConfig = {
 		"./src/generated/graphql/": {
 			preset: "client",
 		},
-		"./schemas/schema.graphql": {
-			plugins: ["schema-ast"],
-			config: {
-				includeDirectives: true,
-			},
-		},
 	},
 };
 

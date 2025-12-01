@@ -1,9 +1,9 @@
-import { Hono } from "hono";
 import { getFullTitle, search } from "./imdb";
-import { cors } from "hono/cors";
-import { instantiateTmdb } from "./tmdb";
-import { env } from "hono/adapter";
 import { instantiatePrisma } from "./prisma";
+import { instantiateTmdb } from "./tmdb";
+import { Hono } from "hono";
+import { env } from "hono/adapter";
+import { cors } from "hono/cors";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
 

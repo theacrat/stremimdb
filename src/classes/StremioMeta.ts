@@ -1,5 +1,5 @@
-import { Image } from "tmdb-ts";
 import { StremioStream } from "./StremioStream";
+import { Image } from "tmdb-ts";
 
 export enum PosterShape {
 	SQUARE = "square",

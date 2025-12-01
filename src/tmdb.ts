@@ -1,5 +1,5 @@
-import { Images, TMDB } from "tmdb-ts";
 import { getPrisma } from "./prisma";
+import { Images, TMDB } from "tmdb-ts";
 
 let tmdb: TMDB;
 
