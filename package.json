@@ -1,29 +1,50 @@
 {
-  "name": "stremimdb",
-  "type": "module",
-  "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
-  },
-  "dependencies": {
-    "@prisma/adapter-d1": "^7.0.1",
-    "@prisma/client": "^7.0.1",
-    "@urql/core": "^6.0.1",
-    "dotenv": "^17.2.3",
-    "graphql": "^16.12.0",
-    "hono": "^4.10.7",
-    "tmdb-ts": "^2.0.2"
-  },
-  "devDependencies": {
-    "@0no-co/graphqlsp": "^1.15.1",
-    "@graphql-codegen/cli": "^6.1.0",
-    "@graphql-codegen/client-preset": "^5.2.1",
-    "@graphql-codegen/schema-ast": "^5.0.0",
-    "@graphql-codegen/typescript-document-nodes": "^5.0.6",
-    "@parcel/watcher": "^2.5.1",
-    "prisma": "^7.0.1",
-    "typescript": "^5.9.3",
-    "wrangler": "^4.4.0"
-  }
+	"name": "stremimdb",
+	"type": "module",
+	"scripts": {
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy --minify",
+		"cf-typegen": "wrangler types --env-interface CloudflareBindings",
+		"codegen": "graphql-codegen --config codegen.ts",
+		"codegen:watch": "graphql-codegen --config codegen.ts --watch",
+		"prisma-generate": "prisma generate",
+		"prisma-generate:watch": "prisma generate --watch",
+		"format": "prettier --write --ignore-unknown",
+		"lint": "eslint --fix",
+		"prepare": "husky"
+	},
+	"lint-staged": {
+		"*": [
+			"bun lint",
+			"bun format"
+		]
+	},
+	"dependencies": {
+		"@prisma/adapter-d1": "^7.0.1",
+		"@prisma/client": "^7.0.1",
+		"@urql/core": "^6.0.1",
+		"dotenv": "^17.2.3",
+		"graphql": "^16.12.0",
+		"hono": "^4.10.7",
+		"tmdb-ts": "^2.0.2"
+	},
+	"devDependencies": {
+		"@0no-co/graphqlsp": "^1.15.1",
+		"@eslint/compat": "^2.0.0",
+		"@eslint/js": "^9.39.1",
+		"@graphql-codegen/cli": "^6.1.0",
+		"@graphql-codegen/client-preset": "^5.2.1",
+		"@graphql-codegen/schema-ast": "^5.0.0",
+		"@graphql-codegen/typescript-document-nodes": "^5.0.6",
+		"@parcel/watcher": "^2.5.1",
+		"eslint": "^9.39.1",
+		"eslint-config-prettier": "^10.1.8",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"prettier": "^3.7.3",
+		"prisma": "^7.0.1",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.48.0",
+		"wrangler": "^4.4.0"
+	}
 }
