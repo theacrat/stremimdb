@@ -3,6 +3,11 @@
 	"name": "stremimdb",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-11-30",
+	"build": {
+		"command": "bunx prisma generate",
+		"cwd": ".",
+		"watch_dir": "./src"
+	},
 	"d1_databases": [
 		{
 			"binding": "ImdbTmdb",
