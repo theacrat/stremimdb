@@ -10,6 +10,7 @@
     "@prisma/adapter-d1": "^7.0.1",
     "@prisma/client": "^7.0.1",
     "@urql/core": "^6.0.1",
+    "dotenv": "^17.2.3",
     "graphql": "^16.12.0",
     "hono": "^4.10.7",
     "tmdb-ts": "^2.0.2"

@@ -5,23 +5,14 @@ import { instantiateTmdb } from "./tmdb";
 import { env } from "hono/adapter";
 import { instantiatePrisma } from "./prisma";
 
-type Bindings = {
-  MY_KV: KVNamespace;
-  DB: D1Database;
-};
+const app = new Hono<{ Bindings: CloudflareBindings }>();
 
-type Env = {
-  TMDB_API: string;
-  ImdbTmdb: D1Database;
-};
-
-const app = new Hono<{ Bindings: Bindings }>();
 app.use("*", cors({ origin: "*" }));
 app.use("*", async (c, next) => {
-  const { TMDB_API, ImdbTmdb } = env<Env>(c);
+  const { TMDB_API, IMDB_TMDB_DB } = env(c);
   const apiKey = await c.text(TMDB_API).text();
   instantiateTmdb(apiKey);
-  instantiatePrisma(ImdbTmdb);
+  instantiatePrisma(IMDB_TMDB_DB);
   return await next();
 });
 
