@@ -1,3 +1,4 @@
+import { Image, Images } from "tmdb-ts";
 import { StremioStream } from "./StremioStream";
 
 export enum PosterShape {
@@ -160,6 +161,15 @@ export class StremioMeta {
 
     for (const [category, legacyField] of legacyFields) {
       this._consolidateLinks(category, legacyField);
+    }
+  }
+
+  public setTmdbImages(backdrop?: Image, logo?: Image): void {
+    if (backdrop) {
+      this.background = `https://image.tmdb.org/t/p/w1280${backdrop.file_path}`;
+    }
+    if (logo) {
+      this.logo = `https://image.tmdb.org/t/p/w500${logo.file_path}`;
     }
   }
 }

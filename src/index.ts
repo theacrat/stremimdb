@@ -1,9 +1,17 @@
 import { Hono } from "hono";
 import { getFullTitle, search } from "./imdb";
 import { cors } from "hono/cors";
+import { instantiateTmdb } from "./tmdb";
+import { env } from "hono/adapter";
 
 const app = new Hono();
 app.use("*", cors({ origin: "*" }));
+app.use("*", async (c, next) => {
+  const { TMDB_API } = env<{ TMDB_API: string }>(c, "workerd");
+  const apiKey = await c.text(TMDB_API).text();
+  instantiateTmdb(apiKey);
+  return await next();
+});
 
 app.get("/manifest.json", (c) => {
   return c.json({

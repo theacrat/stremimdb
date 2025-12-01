@@ -2,6 +2,7 @@ import { Client, cacheExchange, fetchExchange, gql } from "@urql/core";
 import { graphql } from "./graphql/gql";
 import { StremioMeta, Video } from "./classes/StremioMeta";
 import { MainSearchTitleType, MainSearchType } from "./graphql/graphql";
+import { matchId } from "./tmdb";
 
 const client = new Client({
   url: "https://api.graphql.imdb.com/",
@@ -148,6 +149,15 @@ const TitleFull = graphql(`
           }
         }
       }
+      connections(first: 1, filter: { categories: ["follows"] }) {
+        edges {
+          node {
+            associatedTitle {
+              id
+            }
+          }
+        }
+      }
     }
   }
 `);
@@ -155,12 +165,23 @@ const TitleFull = graphql(`
 export async function getFullTitle(
   id: string
 ): Promise<StremioMeta | Record<string, never>> {
-  const result = await client.query(TitleFull, { id: id });
+  let [result, tmdbResults] = await Promise.all([
+    client.query(TitleFull, { id: id }),
+    matchId(id),
+  ]);
 
   const title = result.data?.title;
 
   if (!title?.titleText?.text) {
     return {};
+  }
+
+  if (!tmdbResults) {
+    const connection = title.connections?.edges.find((c) => c)?.node
+      .associatedTitle.id;
+    if (connection) {
+      tmdbResults = await matchId(connection);
+    }
   }
 
   let videos;
@@ -297,6 +318,13 @@ export async function getFullTitle(
       ? { defaultVideoId: title.id }
       : undefined,
   });
+
+  if (tmdbResults) {
+    meta.setTmdbImages(
+      tmdbResults.backdrops.find((r) => r),
+      tmdbResults.logos.find((r) => r)
+    );
+  }
 
   return meta;
 }
