@@ -3,13 +3,25 @@ import { getFullTitle, search } from "./imdb";
 import { cors } from "hono/cors";
 import { instantiateTmdb } from "./tmdb";
 import { env } from "hono/adapter";
+import { instantiatePrisma } from "./prisma";
 
-const app = new Hono();
+type Bindings = {
+  MY_KV: KVNamespace;
+  DB: D1Database;
+};
+
+type Env = {
+  TMDB_API: string;
+  ImdbTmdb: D1Database;
+};
+
+const app = new Hono<{ Bindings: Bindings }>();
 app.use("*", cors({ origin: "*" }));
 app.use("*", async (c, next) => {
-  const { TMDB_API } = env<{ TMDB_API: string }>(c, "workerd");
+  const { TMDB_API, ImdbTmdb } = env<Env>(c);
   const apiKey = await c.text(TMDB_API).text();
   instantiateTmdb(apiKey);
+  instantiatePrisma(ImdbTmdb);
   return await next();
 });
 

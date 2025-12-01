@@ -4,9 +4,12 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
-    "cf-typegen": "wrangler types --env-interface CloudflareBindings"
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "env": "dotenv -e .dev.vars"
   },
   "dependencies": {
+    "@prisma/adapter-d1": "^7.0.1",
+    "@prisma/client": "^7.0.1",
     "@urql/core": "^6.0.1",
     "graphql": "^16.12.0",
     "hono": "^4.10.7",
@@ -19,6 +22,7 @@
     "@graphql-codegen/schema-ast": "^5.0.0",
     "@graphql-codegen/typescript-document-nodes": "^5.0.6",
     "@parcel/watcher": "^2.5.1",
+    "prisma": "^7.0.1",
     "typescript": "^5.9.3",
     "wrangler": "^4.4.0"
   }

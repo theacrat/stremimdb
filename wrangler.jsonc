@@ -1,6 +1,13 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "stremimdb",
-  "main": "src/index.ts",
-  "compatibility_date": "2025-11-30"
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "stremimdb",
+	"main": "src/index.ts",
+	"compatibility_date": "2025-11-30",
+	"d1_databases": [
+		{
+			"binding": "ImdbTmdb",
+			"database_name": "ImdbTmdb",
+			"database_id": "4fa4674d-81fe-434a-8d08-1923d2045a01"
+		}
+	]
 }

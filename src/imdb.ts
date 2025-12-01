@@ -1,8 +1,11 @@
 import { Client, cacheExchange, fetchExchange, gql } from "@urql/core";
-import { graphql } from "./graphql/gql";
+import { graphql } from "./generated/graphql/gql";
 import { StremioMeta, Video } from "./classes/StremioMeta";
-import { MainSearchTitleType, MainSearchType } from "./graphql/graphql";
-import { matchId } from "./tmdb";
+import {
+  MainSearchTitleType,
+  MainSearchType,
+} from "./generated/graphql/graphql";
+import { getImages, matchId } from "./tmdb";
 
 const client = new Client({
   url: "https://api.graphql.imdb.com/",
@@ -167,7 +170,7 @@ export async function getFullTitle(
 ): Promise<StremioMeta | Record<string, never>> {
   let [result, tmdbResults] = await Promise.all([
     client.query(TitleFull, { id: id }),
-    matchId(id),
+    getImages(id),
   ]);
 
   const title = result.data?.title;
@@ -180,7 +183,7 @@ export async function getFullTitle(
     const connection = title.connections?.edges.find((c) => c)?.node
       .associatedTitle.id;
     if (connection) {
-      tmdbResults = await matchId(connection);
+      tmdbResults = await getImages(connection, true);
     }
   }
 
@@ -343,6 +346,15 @@ const Query = graphql(`
               primaryImage {
                 url
               }
+              connections(first: 1, filter: { categories: ["follows"] }) {
+                edges {
+                  node {
+                    associatedTitle {
+                      id
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -373,19 +385,33 @@ export async function search(
     return [];
   }
 
-  const searchResults = result.data.mainSearch.edges.flatMap((r) => {
-    const title = r?.node.entity;
-    if (title?.__typename !== "Title" || !title.titleText?.text) {
-      return [];
-    }
+  const searchResults = await Promise.all(
+    result.data.mainSearch.edges.map(async (r) => {
+      const title = r?.node.entity;
+      if (title?.__typename !== "Title" || !title.titleText?.text) {
+        return [];
+      }
 
-    return new StremioMeta({
-      id: title.id,
-      type: type,
-      name: title.titleText?.text!,
-      poster: title.primaryImage?.url || undefined,
-    });
-  });
+      const connectionId = title.connections?.edges.find((c) => c)?.node
+        .associatedTitle.id;
 
-  return searchResults;
+      let match = await matchId(title.id, connectionId === undefined);
+      if (!match.find((m) => m) && connectionId) {
+        match = await matchId(connectionId, true);
+      }
+
+      if (!match.find((m) => m)) {
+        return [];
+      }
+
+      return new StremioMeta({
+        id: title.id,
+        type: type,
+        name: title.titleText?.text!,
+        poster: title.primaryImage?.url || undefined,
+      });
+    })
+  );
+
+  return searchResults.flat();
 }
