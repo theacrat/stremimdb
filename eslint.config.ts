@@ -4,7 +4,7 @@ import js from "@eslint/js";
 import ts from "typescript-eslint";
 import globals from "globals";
 import { includeIgnoreFile } from "@eslint/compat";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, URL } from "node:url";
 
 export default [
 	includeIgnoreFile(fileURLToPath(new URL(".gitignore", import.meta.url))),
