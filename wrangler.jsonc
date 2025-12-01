@@ -3,6 +3,9 @@
 	"name": "stremimdb",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-11-30",
+	"vars": {
+		"TMDB_API": "Place in .dev.vars"
+	},
 	"d1_databases": [
 		{
 			"binding": "ImdbTmdb",

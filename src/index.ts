@@ -16,12 +16,13 @@ type Env = {
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
+app.use("*", cors({ origin: "*" }));
 app.use("*", async (c, next) => {
   const { TMDB_API, ImdbTmdb } = env<Env>(c);
   const apiKey = await c.text(TMDB_API).text();
   instantiateTmdb(apiKey);
   instantiatePrisma(ImdbTmdb);
-  return cors({ origin: "*" })(c, next);
+  return await next();
 });
 
 app.get("/manifest.json", (c) => {
