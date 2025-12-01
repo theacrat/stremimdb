@@ -1,6 +1,5 @@
 import { Images, TMDB } from "tmdb-ts";
 import { getPrisma } from "./prisma";
-import { TmdbType } from "./generated/prisma/enums";
 
 let tmdb: TMDB;
 
@@ -18,13 +17,13 @@ export async function matchId(imdbId: string, saveOnFail: boolean) {
 
   if (dbMatch) {
     switch (dbMatch.type) {
-      case TmdbType.M: {
+      case "M": {
         return [dbMatch.tmdb, undefined];
       }
-      case TmdbType.T: {
+      case "T": {
         return [undefined, dbMatch.tmdb];
       }
-      case TmdbType.N: {
+      case "N": {
         return [undefined, undefined];
       }
     }
@@ -41,7 +40,7 @@ export async function matchId(imdbId: string, saveOnFail: boolean) {
       data: {
         imdb: imdbId,
         tmdb: movieMatch,
-        type: TmdbType.M,
+        type: "M",
       },
     });
   } else if (tvMatch) {
@@ -49,12 +48,12 @@ export async function matchId(imdbId: string, saveOnFail: boolean) {
       data: {
         imdb: imdbId,
         tmdb: tvMatch,
-        type: TmdbType.T,
+        type: "T",
       },
     });
   } else if (saveOnFail) {
     await prisma.imdbTmdb.create({
-      data: { imdb: imdbId, tmdb: 0, type: TmdbType.N },
+      data: { imdb: imdbId, tmdb: 0, type: "N" },
     });
   }
 

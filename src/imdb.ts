@@ -1,4 +1,4 @@
-import { Client, cacheExchange, fetchExchange, gql } from "@urql/core";
+import { Client, cacheExchange, fetchExchange } from "@urql/core";
 import { graphql } from "./generated/graphql/gql";
 import { StremioMeta, Video } from "./classes/StremioMeta";
 import {
