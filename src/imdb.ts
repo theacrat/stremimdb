@@ -1,8 +1,10 @@
 import { StremioMeta, Video } from "./classes/StremioMeta";
 import { graphql } from "./generated/graphql/gql";
 import {
+	EpisodeConnection,
 	MainSearchTitleType,
 	MainSearchType,
+	Title,
 } from "./generated/graphql/graphql";
 import { getImages, matchId } from "./tmdb";
 import { Client, cacheExchange, fetchExchange } from "@urql/core";
@@ -17,10 +19,65 @@ const client = new Client({
 				"User-Agent":
 					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
 				"Content-Type": "application/json",
+				"x-imdb-user-country": "US",
+				"x-imdb-user-language": "en-US",
 			},
 		};
 	},
 });
+
+const GetMoreEpisodesQuery = graphql(`
+	query GetMoreEpisodes($id: ID!, $after: ID!) {
+		title(id: $id) {
+			episodes {
+				episodes(
+					sort: { by: EPISODE_THEN_RELEASE, order: ASC }
+					first: 250
+					after: $after
+				) {
+					edges {
+						node {
+							id
+							series {
+								displayableEpisodeNumber {
+									displayableSeason {
+										text
+									}
+									episodeNumber {
+										text
+									}
+								}
+							}
+							titleText {
+								text
+							}
+							plot {
+								plotText {
+									plainText
+								}
+							}
+							releaseYear {
+								year
+							}
+							releaseDate {
+								year
+								month
+								day
+							}
+							primaryImage {
+								url
+							}
+						}
+					}
+					pageInfo {
+						endCursor
+						hasNextPage
+					}
+				}
+			}
+		}
+	}
+`);
 
 const TitleFull = graphql(`
 	query Title($id: ID!) {
@@ -89,14 +146,14 @@ const TitleFull = graphql(`
 				}
 			}
 			episodes {
-				episodes(first: 500) {
+				episodes(first: 250, sort: { by: EPISODE_THEN_RELEASE, order: ASC }) {
 					edges {
 						node {
 							id
 							series {
 								displayableEpisodeNumber {
 									displayableSeason {
-										season
+										text
 									}
 									episodeNumber {
 										text
@@ -126,7 +183,7 @@ const TitleFull = graphql(`
 					}
 					pageInfo {
 						hasNextPage
-						hasPreviousPage
+						endCursor
 					}
 					total
 				}
@@ -165,12 +222,48 @@ const TitleFull = graphql(`
 	}
 `);
 
+async function getAllEpisodes(t: Title) {
+	const e = t.episodes?.episodes;
+	if (!e) {
+		return;
+	}
+	let next = e?.pageInfo?.hasNextPage ? e.pageInfo.endCursor : undefined;
+	while (next) {
+		const nextEpisodes = await client.query(GetMoreEpisodesQuery, {
+			id: t.id,
+			after: next,
+		});
+		const n = nextEpisodes?.data?.title?.episodes
+			?.episodes as EpisodeConnection;
+		e?.edges.push(...(n?.edges || []));
+		e.pageInfo = n.pageInfo;
+		next = n?.pageInfo.hasNextPage ? n.pageInfo.endCursor : undefined;
+	}
+
+	e.edges
+		.filter(
+			(e) =>
+				e?.node?.series?.displayableEpisodeNumber?.displayableSeason?.text ===
+				"unknown",
+		)
+		.forEach((e, i) => {
+			if (!e?.node?.series) {
+				return;
+			}
+			e.node.series.displayableEpisodeNumber.displayableSeason.text = "0";
+			e.node.series.displayableEpisodeNumber.episodeNumber.text = (
+				i + 1
+			).toString();
+		});
+}
+
 export async function getFullTitle(
 	id: string,
-): Promise<StremioMeta | Record<string, never>> {
+): Promise<StremioMeta | undefined> {
+	const cleanId = id.replace(".json", "");
 	const results = await Promise.all([
-		client.query(TitleFull, { id: id }),
-		getImages(id),
+		client.query(TitleFull, { id: cleanId }),
+		getImages(cleanId),
 	]);
 
 	const [imdbResults] = results;
@@ -179,7 +272,7 @@ export async function getFullTitle(
 	const title = imdbResults.data?.title;
 
 	if (!title?.titleText?.text) {
-		return {};
+		return;
 	}
 
 	if (!tmdbResults) {
@@ -193,14 +286,14 @@ export async function getFullTitle(
 	let videos;
 
 	if (title.titleType?.canHaveEpisodes) {
+		await getAllEpisodes(title as Title);
 		videos = title.episodes?.episodes?.edges?.flatMap((e) => {
 			if (!e?.node.titleText || !e?.node.releaseDate?.year) {
 				return [];
 			}
 
 			const season = parseInt(
-				e.node.series?.displayableEpisodeNumber?.displayableSeason?.season ||
-					"",
+				e.node.series?.displayableEpisodeNumber?.displayableSeason?.text || "",
 			);
 			const episode = parseInt(
 				e.node.series?.displayableEpisodeNumber?.episodeNumber?.text || "",
@@ -302,7 +395,7 @@ export async function getFullTitle(
 					if (winStr && nomStr) {
 						return `${winStr} & ${nomStr} total`;
 					}
-					return winStr || nomStr;
+					return `${winStr || nomStr} total`;
 				})()
 			: undefined,
 		videos: videos,

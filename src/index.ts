@@ -1,18 +1,52 @@
 import { getFullTitle, search } from "./imdb";
-import { instantiatePrisma } from "./prisma";
+// import { instantiatePrisma } from "./prisma";
 import { instantiateTmdb } from "./tmdb";
 import { Hono } from "hono";
 import { env } from "hono/adapter";
 import { cors } from "hono/cors";
 
 const app = new Hono<{ Bindings: CloudflareBindings }>();
+const cache = caches.default;
+
+function daysToCacheTime(days: number) {
+	return days * 24 * 60 * 60;
+}
+
+async function withCache(
+	request: Request,
+	fetchFn: () => Promise<{
+		response: Response;
+		shouldCache: boolean;
+		ttlDays: number;
+	}>,
+): Promise<Response> {
+	const cachedResponse = await cache.match(request);
+	if (cachedResponse) {
+		return cachedResponse;
+	}
+
+	const { response: data, shouldCache, ttlDays } = await fetchFn();
+
+	if (shouldCache) {
+		data.headers.append(
+			"Cache-Control",
+			`public, max-age=${daysToCacheTime(ttlDays)}`,
+		);
+		cache.put(request, data.clone());
+	}
+
+	return data;
+}
 
 app.use("*", cors({ origin: "*" }));
 app.use("*", async (c, next) => {
-	const { TMDB_API, IMDB_TMDB_DB } = env(c);
+	const {
+		TMDB_API,
+		// IMDB_TMDB_DB
+	} = env(c);
 	const apiKey = await c.text(TMDB_API).text();
 	instantiateTmdb(apiKey);
-	instantiatePrisma(IMDB_TMDB_DB);
+	// instantiatePrisma(IMDB_TMDB_DB);
 	return await next();
 });
 
@@ -61,16 +95,28 @@ app.get("/manifest.json", (c) => {
 
 app.get("/meta/:type{(movie|series)}/:id", async (c) => {
 	const { id } = c.req.param();
+	const result = await getFullTitle(id);
 
-	const result = await getFullTitle(id.replace(".json", ""));
-	return c.json({ meta: result });
+	return withCache(c.req.raw, async () => {
+		return {
+			response: await (result ? c.json({ meta: result }) : c.notFound()),
+			shouldCache: !!result,
+			ttlDays: 7,
+		};
+	});
 });
 
 app.get("/catalog/:type{(movie|series)}/search/:query", async (c) => {
 	const { type, query } = c.req.param();
-	const cleanedQuery = query.replace("search=", "").replace(".json", "");
-	const result = await search(cleanedQuery, type);
-	return c.json({ metas: result });
+	const result = await search(query, type);
+
+	return withCache(c.req.raw, async () => {
+		return {
+			response: c.json({ metas: result }),
+			shouldCache: !!result,
+			ttlDays: 7,
+		};
+	});
 });
 
 export default app;

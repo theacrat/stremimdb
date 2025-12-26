@@ -362,13 +362,19 @@ export enum AdvancedNameSearchSortBy {
   /**
    * Sort names based on their birth date
    * ASC: Earliest dates to Highest dates (Oldest - Youngest)
-   * "BIRTH_DATE"
+   */
+  BirthDate = 'BIRTH_DATE',
+  /**
    * Sort names based on their death date
    * ASC: Earliest dates to last dates (Died First - Died Last)
-   * "DEATH_DATE"
+   */
+  DeathDate = 'DEATH_DATE',
+  /**
    * Sort names alphabetically
    * ASC: A-Z
-   * "NAME"
+   */
+  Name = 'NAME',
+  /**
    * Sort names based on their starMeterCurrentWeekRank
    * ASC: Lower popularity score means that the name is more popular, so the most popular names will be first
    */
@@ -522,53 +528,79 @@ export enum AdvancedTitleSearchSortBy {
    * Gross revenue pulled in via box-office in Domestic market for entire lifetime of title.
    * Domestic refers to North America (U.S., Canada, and Puerto Rico)
    * ASC: Lower numbers means the title has pulled in less box-office revenue, so poorer performing titles will be first.
-   * "BOX_OFFICE_GROSS_DOMESTIC"
+   */
+  BoxOfficeGrossDomestic = 'BOX_OFFICE_GROSS_DOMESTIC',
+  /**
    * Overall Metascore based on critic reviews. Titles without a metascore are
    * placed at the end when using ASC sort order.
    * ASC: Lower Metacritic score means the title is rated more poorly, so titles with worse scores will be first.
-   * "METACRITIC_SCORE"
+   */
+  MetacriticScore = 'METACRITIC_SCORE',
+  /**
    * Star Rating given by the requesting user.
    * ASC: Lower star rating means the title the user rated the title more poorly, so most disliked titles will be first.
-   * "MY_RATING"
+   */
+  MyRating = 'MY_RATING',
+  /**
    * Date when customer rated a title.
    * ASC: Earlier (older) ratings will be first.
-   * "MY_RATING_DATE"
+   */
+  MyRatingDate = 'MY_RATING_DATE',
+  /**
    * TitleMeterType.TITLE_METER (aka Pro MOVIEMeter). Score given to non-episodic title types.
    * ASC: Lower popularity score means that the title is more popular, so the most popular titles will be first.
-   * "POPULARITY"
+   */
+  Popularity = 'POPULARITY',
+  /**
    * Sort results based on specified ranking algorithm.  For the advancedTitleSearch query, exactly one ranked title list
    * constraint must be specified for using this sort option.
    * ASC: Higher ranks will be first.
-   * "RANKING"
+   */
+  Ranking = 'RANKING',
+  /**
    * Earliest wide release date of a title. Titles without a release date are
    * placed at the end when using ASC sort order.
    * ASC: Earlier (older) released title will be first.
-   * "RELEASE_DATE"
+   */
+  ReleaseDate = 'RELEASE_DATE',
+  /**
    * The length of the title in terms of runtime.
    * ASC: Lower runtime means the title is shorter, so shortest titles will be first.
-   * "RUNTIME"
+   */
+  Runtime = 'RUNTIME',
+  /**
    * Star Rating given by the specified user in the SpecifiedUserRatingSearchConstraint.
    * Throws BAD_USER_INPUT if the SpecifiedUserRatingSearchConstraint is not specified.
    * ASC: Lower star rating means the title the user rated the title more poorly, so most disliked titles will be first.
-   * "SINGLE_USER_RATING"
+   */
+  SingleUserRating = 'SINGLE_USER_RATING',
+  /**
    * Date when the specified user rated a title.
    * Throws BAD_USER_INPUT if the SpecifiedUserRatingSearchConstraint is not specified.
    * ASC: Earlier (older) ratings will be first.
-   * "SINGLE_USER_RATING_DATE"
+   */
+  SingleUserRatingDate = 'SINGLE_USER_RATING_DATE',
+  /**
    * Alphabetical sorting based on regional title text as determined by user language preferences.
    * Language preference is determined by x-imdb-user-country and x-imdb-user-language headers.
    * Only supports the languages/regions we support for localized search. Defaults to original title otherwise.
    * ASC: Lower numbers and letters near the top of the alphabet will be returned first.
-   * "TITLE_REGIONAL"
+   */
+  TitleRegional = 'TITLE_REGIONAL',
+  /**
    * Weighted IMDb Star Rating as determined by users
    * Note: IMDb maintains a threshold to a minimum number of ratings before it is considered.
    * ASC: Lower star rating means the title is rated more poorly, so titles with worse ratings will be first.
-   * "USER_RATING"
+   */
+  UserRating = 'USER_RATING',
+  /**
    * Count of ratings given by users
    * Note: IMDb maintains a threshold to a minimum number of ratings before it is considered.
    * ASC: Lower count of ratings means the title has been rated a fewer number of
    * times, so titles with least ratings will be first.
-   * "USER_RATING_COUNT"
+   */
+  UserRatingCount = 'USER_RATING_COUNT',
+  /**
    * The recognized year of the title. Typically, the release year, but guidelines are here:
    * https://help.imdb.com/article/contribution/titles/title-formatting/G56U5ERK7YY47CQB
    * ASC: Earlier (older) titles will be first.
@@ -2218,9 +2250,9 @@ export type ClientSort = {
 };
 
 export enum ClientSortBy {
+  /** Sort names alphabetically ASC: A-Z */
+  Name = 'NAME',
   /**
-   * Sort names alphabetically ASC: A-Z
-   * "NAME"
    * Sort names based on their starMeterCurrentWeekRank
    *
    * ASC: Lower popularity score means that the name is more popular,
@@ -3310,7 +3342,9 @@ export enum ConsentOperation {
    * Opt in to the consent. i.e. Yes or 'accept all'
    * Note: Default consent operation for a given type
    * is provided in the consentRequirement
-   * "IN"
+   */
+  In = 'IN',
+  /**
    * Opt out of the consent. i.e. No or 'reject all'
    * Note: Default consent operation for a given type
    * is provided in the consentRequirement
@@ -3322,7 +3356,9 @@ export enum ConsentType {
   /**
    * Consent for not sharing customer information with third parties.
    * For IMDb, this disables cross contextual behavioral advertising.
-   * "THIRD_PARTY_DATA_SHARING"
+   */
+  ThirdPartyDataSharing = 'THIRD_PARTY_DATA_SHARING',
+  /**
    * Used for Cookie/Tracker consent. Corresponds to "CookieConsent"
    * model in TollhouseService. https://tiny.amazon.com/1hii9awk1/codeamazpackPRIVblobb59emode
    */
@@ -4050,22 +4086,28 @@ export enum CreditCategoryTrait {
    * Identifies categories where the person appears as themselves in a on-screen
    * capacity. Specifically, their Self role is not captured in a more specific
    * category like Host or Judge.
-   * "ADDITIONAL_APPEARANCES_TRAIT"
-   * Identifies categories that make up the 'Cast' of a title
-   * "CAST_TRAIT"
-   * Identifies categories that make up the 'Crew' of a title
-   * "CREW_TRAIT"
+   */
+  AdditionalAppearancesTrait = 'ADDITIONAL_APPEARANCES_TRAIT',
+  /** Identifies categories that make up the 'Cast' of a title */
+  CastTrait = 'CAST_TRAIT',
+  /** Identifies categories that make up the 'Crew' of a title */
+  CrewTrait = 'CREW_TRAIT',
+  /**
    * Identifies categories for crew typically responsible for the creative shape of
    * a feature movie. Not exhaustive, intended as a summary of credits only.
-   * "MAJOR_CREATIVE_INPUT_TRAIT"
-   * Identifies categories where the name is in a 'Self' role on the title
-   * "SELF_TRAIT"
-   * Identifies categories where the name is in a 'Thanks' role on the title
-   * "THANKS_TRAIT"
+   */
+  MajorCreativeInputTrait = 'MAJOR_CREATIVE_INPUT_TRAIT',
+  /** Identifies categories where the name is in a 'Self' role on the title */
+  SelfTrait = 'SELF_TRAIT',
+  /** Identifies categories where the name is in a 'Thanks' role on the title */
+  ThanksTrait = 'THANKS_TRAIT',
+  /**
    * Identifies categories that are a catch-all of credits that do not belong in
    * the taxonomy of other categories. Allows clients to put less emphasis on the
    * category as a signifier of the work done by a name on a title.
-   * "UNCATEGORIZED_TRAIT"
+   */
+  UncategorizedTrait = 'UNCATEGORIZED_TRAIT',
+  /**
    * Identifies categories that are still in testing phase and should be hidden
    * from public-facing interfaces such as search filters, dropdowns, and selection
    * controls. The presence of this trait indicates the category exists in the
@@ -4805,13 +4847,15 @@ export enum CreditsModePreset {
   /**
    * Credits are filtered to remove mention of passive roles, such as Thanks and Archive Footage.
    * Names are typically not known for roles where they were passively involved in the title.
-   * "KNOWN_FOR"
+   */
+  KnownFor = 'KNOWN_FOR',
+  /**
    * Applies the filters from "KNOWN_FOR". Additionally, contributed credits are
    * aggregated to the category level. If a name has performed several different Producer roles across episodes in a
    * TV series, these would be presented as a single CreditedRole within the CreditV2 response value for that title.
-   * "KNOWN_FOR_WITH_CATEGORY_AGGREGATION"
-   * No preset is used
    */
+  KnownForWithCategoryAggregation = 'KNOWN_FOR_WITH_CATEGORY_AGGREGATION',
+  /** No preset is used */
   None = 'NONE'
 }
 
@@ -9343,36 +9387,56 @@ export enum InterstitialButtonAction {
   /**
    * Convert an IMDb account that has existing LWA linkage to the authenticated Amazon account.
    * Client should call conversion mutation with just the Amazon token.
-   * "CONVERT_LWA_TO_AAP"
+   */
+  ConvertLwaToAap = 'CONVERT_LWA_TO_AAP',
+  /**
    * Convert the authenticated IMDb account to the authenticated Amazon account.
    * Client should call conversion mutation with both tokens.
-   * "CONVERT_TO_AAP"
+   */
+  ConvertToAap = 'CONVERT_TO_AAP',
+  /**
    * Create new IMDb account using authenticated Amazon account.
    * Client should proceed with new account creation.
-   * "CREATE_NEW_ACCOUNT"
+   */
+  CreateNewAccount = 'CREATE_NEW_ACCOUNT',
+  /**
    * Start IMDb account linking process.
    * Client should initiate the IMDb authentication flow for linking.
-   * "LINK_IMDB_ACCOUNT"
+   */
+  LinkImdbAccount = 'LINK_IMDB_ACCOUNT',
+  /**
    * Start IMDb account linking process.
    * Client should initiate the IMDb authentication flow for linking with a prefilled email.
-   * "LINK_IMDB_ACCOUNT_EMAIL_PREFILLED"
+   */
+  LinkImdbAccountEmailPrefilled = 'LINK_IMDB_ACCOUNT_EMAIL_PREFILLED',
+  /**
    * Return user to sign-in options.
    * Client should navigate to the main sign-in options page/screen.
-   * "SHOW_SIGN_IN_OPTIONS"
+   */
+  ShowSignInOptions = 'SHOW_SIGN_IN_OPTIONS',
+  /**
    * Redirect user to Amazon (AAP) sign-in flow.
    * Client should navigate to the Sign in with Amazon page/screen.
    * Used for standard Amazon account authentication.
-   * "SIGN_IN_WITH_AMAZON"
+   */
+  SignInWithAmazon = 'SIGN_IN_WITH_AMAZON',
+  /**
    * Redirect user to IMDb sign-in flow.
    * Client should navigate to the Sign in with IMDb page/screen.
-   * "SIGN_IN_WITH_IMDB"
+   */
+  SignInWithImdb = 'SIGN_IN_WITH_IMDB',
+  /**
    * Redirect user to IMDb sign-in flow with a prefilled email.
    * Client should navigate to the Sign in with IMDb page/screen.
-   * "SIGN_IN_WITH_IMDB_EMAIL_PREFILLED"
+   */
+  SignInWithImdbEmailPrefilled = 'SIGN_IN_WITH_IMDB_EMAIL_PREFILLED',
+  /**
    * Redirect user to LWA sign-in flow.
    * Client should navigate to the Sign in with Amazon page/screen.
    * Used for third-party applications (e.g., IMDb) requiring Amazon authentication.
-   * "SIGN_IN_WITH_LWA"
+   */
+  SignInWithLwa = 'SIGN_IN_WITH_LWA',
+  /**
    * Sign out the current user.
    * Client should clear authentication state and return to unauthenticated state.
    */
@@ -9433,13 +9497,13 @@ export enum InterstitialDialogStyle {
   /**
    * Contained text - display text within a box
    * Used for highlighting important messages (e.g., highlighting account conversion text)
-   * "BOX"
-   * Primary text - used for key information
-   * "PRIMARY"
-   * Secondary text - used for additional information (e.g., company trivia)
-   * "SECONDARY"
-   * Title text - used for dialog titles
    */
+  Box = 'BOX',
+  /** Primary text - used for key information */
+  Primary = 'PRIMARY',
+  /** Secondary text - used for additional information (e.g., company trivia) */
+  Secondary = 'SECONDARY',
+  /** Title text - used for dialog titles */
   Title = 'TITLE'
 }
 
@@ -10404,10 +10468,14 @@ export enum ListSearchSortBy {
   /**
    * Date when the list was created
    * ASC: Earlier date will be first.
-   * "DATE_CREATED"
+   */
+  DateCreated = 'DATE_CREATED',
+  /**
    * Date when the list was last modified
    * ASC: Earlier date will be first.
-   * "DATE_MODIFIED"
+   */
+  DateModified = 'DATE_MODIFIED',
+  /**
    * List name, sort alphabetically
    * ASC: Aa-Zz
    */
@@ -13721,18 +13789,26 @@ export enum NameListSearchSortBy {
   /**
    * Sort names based on their birth date
    * ASC: Earliest dates to Highest dates (Oldest - Youngest)
-   * "BIRTH_DATE"
+   */
+  BirthDate = 'BIRTH_DATE',
+  /**
    * Date when the list item was added to the list
    * ASC: Earlier date will be first.
-   * "DATE_ADDED"
+   */
+  DateAdded = 'DATE_ADDED',
+  /**
    * Sort names based on their death date
    * ASC: Earliest dates to last dates (Died First - Died Last)
-   * "DEATH_DATE"
-   * List order determined by the customer
-   * "LIST_ORDER"
+   */
+  DeathDate = 'DEATH_DATE',
+  /** List order determined by the customer */
+  ListOrder = 'LIST_ORDER',
+  /**
    * Sort names alphabetically
    * ASC: A-Z
-   * "NAME"
+   */
+  Name = 'NAME',
+  /**
    * Sort names based on their starMeterCurrentWeekRank
    * ASC: Lower popularity score means that the name is more popular, so the most popular names will be first
    */
@@ -15868,7 +15944,9 @@ export enum PollAnswerSortBy {
   /**
    * Sort answers by author defined index value.
    * ASC: From the least (1) to the greatest number.
-   * "ANSWER_INDEX"
+   */
+  AnswerIndex = 'ANSWER_INDEX',
+  /**
    * Sort answers based on their vote count.
    * DESC: From greatest number to the least number. For same vote count, least ANSWER_INDEX first.
    */
@@ -19940,17 +20018,15 @@ export type RankedTitleListSearchConstraint = {
 };
 
 export enum RankedTitleListType {
-  /**
-   * Ranking description: https://w.amazon.com/bin/view/IMDb/Ratings/Build/Logic#Lowest_Rated_Movies
-   * "LOWEST_RATED_MOVIES"
-   * Popularity-based ranking that aggregates titles of type movie, short, and video.
-   * "MOVIE_METER"
-   * Popularity-based ranking that aggregates titles of all types aside from episodes (like podcast, tv, audio ...)
-   * "TITLE_METER"
-   * Ranking description: https://w.amazon.com/bin/view/IMDb/Ratings/Build/Logic#Top_Rated_Movies
-   * "TOP_RATED_MOVIES"
-   * Popularity-based ranking that aggregates titles of type tv_series, tv_miniseries, tv_movie, tv_short, and tv_special
-   */
+  /** Ranking description: https://w.amazon.com/bin/view/IMDb/Ratings/Build/Logic#Lowest_Rated_Movies */
+  LowestRatedMovies = 'LOWEST_RATED_MOVIES',
+  /** Popularity-based ranking that aggregates titles of type movie, short, and video. */
+  MovieMeter = 'MOVIE_METER',
+  /** Popularity-based ranking that aggregates titles of all types aside from episodes (like podcast, tv, audio ...) */
+  TitleMeter = 'TITLE_METER',
+  /** Ranking description: https://w.amazon.com/bin/view/IMDb/Ratings/Build/Logic#Top_Rated_Movies */
+  TopRatedMovies = 'TOP_RATED_MOVIES',
+  /** Popularity-based ranking that aggregates titles of type tv_series, tv_miniseries, tv_movie, tv_short, and tv_special */
   TvMeter = 'TV_METER'
 }
 
@@ -20056,7 +20132,9 @@ export enum RatingsSortBy {
    * Sort by most recent rating date.
    * ASC: Oldest ratings will be first.
    * DESC: Newest ratings will be first.
-   * "MOST_RECENT"
+   */
+  MostRecent = 'MOST_RECENT',
+  /**
    * Sort by highest rating
    * ASC: Highest ratings will be first.
    * DESC: Lowest ratings will be first.
@@ -20901,7 +20979,9 @@ export enum SearchWatchOptionType {
   /**
    * Match titles with any digital watch options including subscriptions and
    * rent/buy to stream online.
-   * "ANY_DIGITAL"
+   */
+  AnyDigital = 'ANY_DIGITAL',
+  /**
    * Match titles with a subscription-based streaming watch option
    * For example, watch options on Prime, Hulu, Netflix, etc. that can be streamed
    * with a subscription
@@ -25413,58 +25493,86 @@ export enum TitleListSearchSortBy {
    * Gross revenue pulled in via box-office in Domestic market for entire lifetime of title.
    * Domestic refers to North America (U.S., Canada, and Puerto Rico)
    * ASC: Lower numbers means the title has pulled in less box-office revenue, so poorer performing titles will be first.
-   * "BOX_OFFICE_GROSS_DOMESTIC"
+   */
+  BoxOfficeGrossDomestic = 'BOX_OFFICE_GROSS_DOMESTIC',
+  /**
    * Date when the list item was added to the list
    * ASC: Earlier date will be first.
-   * "DATE_ADDED"
-   * List order determined by the customer
-   * "LIST_ORDER"
+   */
+  DateAdded = 'DATE_ADDED',
+  /** List order determined by the customer */
+  ListOrder = 'LIST_ORDER',
+  /**
    * Overall Metascore based on critic reviews. Titles without a metascore are
    * placed at the end when using ASC sort order.
    * ASC: Lower Metacritic score means the title is rated more poorly, so titles with worse scores will be first.
-   * "METACRITIC_SCORE"
+   */
+  MetacriticScore = 'METACRITIC_SCORE',
+  /**
    * Star Rating given by the requesting user.
    * ASC: Lower star rating means the title the user rated the title more poorly, so most disliked titles will be first.
-   * "MY_RATING"
+   */
+  MyRating = 'MY_RATING',
+  /**
    * Date when customer rated a title.
    * ASC: Earlier (older) ratings will be first.
-   * "MY_RATING_DATE"
+   */
+  MyRatingDate = 'MY_RATING_DATE',
+  /**
    * TitleMeterType.TITLE_METER (aka Pro MOVIEMeter). Score given to non-episodic title types.
    * ASC: Lower popularity score means that the title is more popular, so the most popular titles will be first.
-   * "POPULARITY"
+   */
+  Popularity = 'POPULARITY',
+  /**
    * Sort results based on specified ranking algorithm.  For the advancedTitleSearch query, exactly one ranked title list
    * constraint must be specified for using this sort option.
    * ASC: Higher ranks will be first.
-   * "RANKING"
+   */
+  Ranking = 'RANKING',
+  /**
    * Earliest wide release date of a title. Titles without a release date are
    * placed at the end when using ASC sort order.
    * ASC: Earlier (older) released title will be first.
-   * "RELEASE_DATE"
+   */
+  ReleaseDate = 'RELEASE_DATE',
+  /**
    * The length of the title in terms of runtime.
    * ASC: Lower runtime means the title is shorter, so shortest titles will be first.
-   * "RUNTIME"
+   */
+  Runtime = 'RUNTIME',
+  /**
    * Star Rating given by the specified user in the SpecifiedUserRatingSearchConstraint.
    * Throws BAD_USER_INPUT if the SpecifiedUserRatingSearchConstraint is not specified.
    * ASC: Lower star rating means the title the user rated the title more poorly, so most disliked titles will be first.
-   * "SINGLE_USER_RATING"
+   */
+  SingleUserRating = 'SINGLE_USER_RATING',
+  /**
    * Date when the specified user rated a title.
    * Throws BAD_USER_INPUT if the SpecifiedUserRatingSearchConstraint is not specified.
    * ASC: Earlier (older) ratings will be first.
-   * "SINGLE_USER_RATING_DATE"
+   */
+  SingleUserRatingDate = 'SINGLE_USER_RATING_DATE',
+  /**
    * Alphabetical sorting based on regional title text as determined by user language preferences.
    * Language preference is determined by x-imdb-user-country and x-imdb-user-language headers.
    * Only supports the languages/regions we support for localized search. Defaults to original title otherwise.
    * ASC: Lower numbers and letters near the top of the alphabet will be returned first.
-   * "TITLE_REGIONAL"
+   */
+  TitleRegional = 'TITLE_REGIONAL',
+  /**
    * Weighted IMDb Star Rating as determined by users
    * Note: IMDb maintains a threshold to a minimum number of ratings before it is considered.
    * ASC: Lower star rating means the title is rated more poorly, so titles with worse ratings will be first.
-   * "USER_RATING"
+   */
+  UserRating = 'USER_RATING',
+  /**
    * Count of ratings given by users
    * Note: IMDb maintains a threshold to a minimum number of ratings before it is considered.
    * ASC: Lower count of ratings means the title has been rated a fewer number of
    * times, so titles with least ratings will be first.
-   * "USER_RATING_COUNT"
+   */
+  UserRatingCount = 'USER_RATING_COUNT',
+  /**
    * The recognized year of the title. Typically, the release year, but guidelines are here:
    * https://help.imdb.com/article/contribution/titles/title-formatting/G56U5ERK7YY47CQB
    * ASC: Earlier (older) titles will be first.
@@ -26255,12 +26363,14 @@ export enum TopTrendingPredefinedEnum {
   /**
    * Trending Set for released Indian Titles with primary language Tamil
    * based on Global Traffic
-   * "INDIA_TITLE_TRENDS_RELEASED_TAMIL"
+   */
+  IndiaTitleTrendsReleasedTamil = 'INDIA_TITLE_TRENDS_RELEASED_TAMIL',
+  /**
    * Trending Set for released Indian Titles with primary language Telugu
    * based on Global Traffic
-   * "INDIA_TITLE_TRENDS_RELEASED_TELUGU"
-   * Trending Set for upcoming Indian Titles based on Global Traffic
    */
+  IndiaTitleTrendsReleasedTelugu = 'INDIA_TITLE_TRENDS_RELEASED_TELUGU',
+  /** Trending Set for upcoming Indian Titles based on Global Traffic */
   IndiaTitleTrendsUpcoming = 'INDIA_TITLE_TRENDS_UPCOMING'
 }
 
@@ -28107,10 +28217,14 @@ export enum VideoMimeType {
    * A computer file format for a multimedia playlist. One common use of the M3U file format is
    * creating a single-entry playlist file pointing to a stream on the Internet - application/x-mpegurl
    * https://en.wikipedia.org/wiki/M3U
-   * "M3U8"
+   */
+  M3U8 = 'M3U8',
+  /**
    * The ISO standard video file format based on Quicktime - video/mp4
    * https://www.iana.org/assignments/media-types/video/mp4
-   * "MP4"
+   */
+  Mp4 = 'MP4',
+  /**
    * A video file format designed as a royalty-free alternative to use in HTML5 video - video/webm
    * https://en.wikipedia.org/wiki/WebM
    */
@@ -28936,6 +29050,14 @@ export type YearRange = {
   year?: Maybe<Scalars['Int']['output']>;
 };
 
+export type GetMoreEpisodesQueryVariables = Exact<{
+  id: Scalars['ID']['input'];
+  after: Scalars['ID']['input'];
+}>;
+
+
+export type GetMoreEpisodesQuery = { __typename?: 'Query', title?: { __typename?: 'Title', episodes?: { __typename?: 'Episodes', episodes?: { __typename?: 'EpisodeConnection', edges: Array<{ __typename?: 'EpisodeEdge', node: { __typename?: 'Title', id: string, series?: { __typename?: 'Series', displayableEpisodeNumber: { __typename?: 'DisplayableEpisodeNumber', displayableSeason: { __typename?: 'LocalizedDisplayableSeason', text: string }, episodeNumber: { __typename?: 'LocalizedDisplayableEpisodeNumber', text: string } } } | null, titleText?: { __typename?: 'TitleText', text: string } | null, plot?: { __typename?: 'Plot', plotText?: { __typename?: 'Markdown', plainText?: string | null } | null } | null, releaseYear?: { __typename?: 'YearRange', year?: number | null } | null, releaseDate?: { __typename?: 'ReleaseDate', year?: number | null, month?: number | null, day?: number | null } | null, primaryImage?: { __typename?: 'Image', url?: string | null } | null } } | null>, pageInfo: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage: boolean } } | null } | null } | null };
+
 export type TitleQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -28944,7 +29066,7 @@ export type TitleQueryVariables = Exact<{
 export type TitleQuery = { __typename?: 'Query', title?: { __typename?: 'Title', id: string, titleText?: { __typename?: 'TitleText', text: string, isOriginalTitle: boolean } | null, originalTitleText?: { __typename?: 'TitleText', text: string } | null, spokenLanguages?: { __typename?: 'SpokenLanguages', spokenLanguages: Array<{ __typename?: 'SpokenLanguage', text: string } | null> } | null, releaseYear?: { __typename?: 'YearRange', year?: number | null, endYear?: number | null } | null, releaseDate?: { __typename?: 'ReleaseDate', year?: number | null, month?: number | null, day?: number | null } | null, titleType?: { __typename?: 'TitleType', canHaveEpisodes: boolean } | null, plot?: { __typename?: 'Plot', plotText?: { __typename?: 'Markdown', plainText?: string | null } | null } | null, ratingsSummary?: { __typename?: 'RatingsSummary', aggregateRating?: number | null } | null, primaryImage?: { __typename?: 'Image', url?: string | null } | null, runtime?: { __typename?: 'Runtime', displayableProperty: { __typename?: 'DisplayableTitleRuntimeProperty', value: { __typename?: 'Markdown', plainText?: string | null } } } | null, titleGenres?: { __typename?: 'TitleGenres', genres: Array<{ __typename?: 'TitleGenre', genre: { __typename?: 'GenreItem', text: string } } | null> } | null, principalCredits?: Array<{ __typename?: 'PrincipalCreditsForCategory', category: { __typename?: 'CreditCategory', id: string }, credits: Array<
         | { __typename?: 'Cast', name: { __typename?: 'Name', id: string, nameText?: { __typename?: 'NameText', text: string } | null } }
         | { __typename?: 'Crew', name: { __typename?: 'Name', id: string, nameText?: { __typename?: 'NameText', text: string } | null } }
-       | null> } | null> | null, episodes?: { __typename?: 'Episodes', episodes?: { __typename?: 'EpisodeConnection', total: number, edges: Array<{ __typename?: 'EpisodeEdge', node: { __typename?: 'Title', id: string, series?: { __typename?: 'Series', displayableEpisodeNumber: { __typename?: 'DisplayableEpisodeNumber', displayableSeason: { __typename?: 'LocalizedDisplayableSeason', season: string }, episodeNumber: { __typename?: 'LocalizedDisplayableEpisodeNumber', text: string } } } | null, titleText?: { __typename?: 'TitleText', text: string } | null, plot?: { __typename?: 'Plot', plotText?: { __typename?: 'Markdown', plainText?: string | null } | null } | null, releaseYear?: { __typename?: 'YearRange', year?: number | null } | null, releaseDate?: { __typename?: 'ReleaseDate', year?: number | null, month?: number | null, day?: number | null } | null, primaryImage?: { __typename?: 'Image', url?: string | null } | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, hasPreviousPage: boolean } } | null } | null, countriesOfOrigin?: { __typename?: 'CountriesOfOrigin', countries: Array<{ __typename?: 'CountryOfOrigin', text: string } | null> } | null, awardNominations?: { __typename?: 'AwardNominationConnection', total: number, edges: Array<{ __typename?: 'AwardNominationEdge', node: { __typename?: 'AwardNomination', isWinner: boolean } } | null> } | null, externalLinks?: { __typename?: 'ExternalLinkConnection', edges: Array<{ __typename?: 'ExternalLinkEdge', node: { __typename?: 'ExternalLink', url: string, label?: string | null } } | null> } | null, connections?: { __typename?: 'TitleConnectionConnection', edges: Array<{ __typename?: 'TitleConnectionEdge', node: { __typename?: 'TitleConnection', associatedTitle: { __typename?: 'Title', id: string } } } | null> } | null } | null };
+       | null> } | null> | null, episodes?: { __typename?: 'Episodes', episodes?: { __typename?: 'EpisodeConnection', total: number, edges: Array<{ __typename?: 'EpisodeEdge', node: { __typename?: 'Title', id: string, series?: { __typename?: 'Series', displayableEpisodeNumber: { __typename?: 'DisplayableEpisodeNumber', displayableSeason: { __typename?: 'LocalizedDisplayableSeason', text: string }, episodeNumber: { __typename?: 'LocalizedDisplayableEpisodeNumber', text: string } } } | null, titleText?: { __typename?: 'TitleText', text: string } | null, plot?: { __typename?: 'Plot', plotText?: { __typename?: 'Markdown', plainText?: string | null } | null } | null, releaseYear?: { __typename?: 'YearRange', year?: number | null } | null, releaseDate?: { __typename?: 'ReleaseDate', year?: number | null, month?: number | null, day?: number | null } | null, primaryImage?: { __typename?: 'Image', url?: string | null } | null } } | null>, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null } } | null } | null, countriesOfOrigin?: { __typename?: 'CountriesOfOrigin', countries: Array<{ __typename?: 'CountryOfOrigin', text: string } | null> } | null, awardNominations?: { __typename?: 'AwardNominationConnection', total: number, edges: Array<{ __typename?: 'AwardNominationEdge', node: { __typename?: 'AwardNomination', isWinner: boolean } } | null> } | null, externalLinks?: { __typename?: 'ExternalLinkConnection', edges: Array<{ __typename?: 'ExternalLinkEdge', node: { __typename?: 'ExternalLink', url: string, label?: string | null } } | null> } | null, connections?: { __typename?: 'TitleConnectionConnection', edges: Array<{ __typename?: 'TitleConnectionEdge', node: { __typename?: 'TitleConnection', associatedTitle: { __typename?: 'Title', id: string } } } | null> } | null } | null };
 
 export type QueryQueryVariables = Exact<{
   search: MainSearchOptions;
@@ -28962,5 +29084,6 @@ export type QueryQuery = { __typename?: 'Query', mainSearch?: { __typename?: 'Ma
          } } | null> } | null };
 
 
-export const TitleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Title"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"titleText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"isOriginalTitle"}}]}},{"kind":"Field","name":{"kind":"Name","value":"originalTitleText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"spokenLanguages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spokenLanguages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseYear"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"endYear"}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseDate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"day"}}]}},{"kind":"Field","name":{"kind":"Name","value":"titleType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canHaveEpisodes"}}]}},{"kind":"Field","name":{"kind":"Name","value":"plot"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plotText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plainText"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"ratingsSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregateRating"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}},{"kind":"Field","name":{"kind":"Name","value":"runtime"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayableProperty"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plainText"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"titleGenres"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"genres"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"genre"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"principalCredits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"credits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"episodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"episodes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"500"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"series"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayableEpisodeNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayableSeason"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"season"}}]}},{"kind":"Field","name":{"kind":"Name","value":"episodeNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"titleText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"plot"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plotText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plainText"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseYear"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseDate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"day"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"hasPreviousPage"}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"countriesOfOrigin"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"awardNominations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1000"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isWinner"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"externalLinks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"10"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"categories"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"official","block":false}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"label"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"connections"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"categories"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"follows","block":false}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"associatedTitle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<TitleQuery, TitleQueryVariables>;
+export const GetMoreEpisodesDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"GetMoreEpisodes"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"after"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"episodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"episodes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"by"},"value":{"kind":"EnumValue","value":"EPISODE_THEN_RELEASE"}},{"kind":"ObjectField","name":{"kind":"Name","value":"order"},"value":{"kind":"EnumValue","value":"ASC"}}]}},{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"250"}},{"kind":"Argument","name":{"kind":"Name","value":"after"},"value":{"kind":"Variable","name":{"kind":"Name","value":"after"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"series"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayableEpisodeNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayableSeason"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"episodeNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"titleText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"plot"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plotText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plainText"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseYear"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseDate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"day"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"endCursor"}},{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<GetMoreEpisodesQuery, GetMoreEpisodesQueryVariables>;
+export const TitleDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Title"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"id"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"ID"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"title"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"id"},"value":{"kind":"Variable","name":{"kind":"Name","value":"id"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"titleText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}},{"kind":"Field","name":{"kind":"Name","value":"isOriginalTitle"}}]}},{"kind":"Field","name":{"kind":"Name","value":"originalTitleText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"spokenLanguages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"spokenLanguages"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseYear"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"endYear"}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseDate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"day"}}]}},{"kind":"Field","name":{"kind":"Name","value":"titleType"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"canHaveEpisodes"}}]}},{"kind":"Field","name":{"kind":"Name","value":"plot"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plotText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plainText"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"ratingsSummary"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"aggregateRating"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}},{"kind":"Field","name":{"kind":"Name","value":"runtime"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayableProperty"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"value"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plainText"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"titleGenres"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"genres"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"genre"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"principalCredits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"category"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}},{"kind":"Field","name":{"kind":"Name","value":"credits"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"name"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"nameText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"episodes"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"episodes"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"250"}},{"kind":"Argument","name":{"kind":"Name","value":"sort"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"by"},"value":{"kind":"EnumValue","value":"EPISODE_THEN_RELEASE"}},{"kind":"ObjectField","name":{"kind":"Name","value":"order"},"value":{"kind":"EnumValue","value":"ASC"}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"series"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayableEpisodeNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"displayableSeason"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"episodeNumber"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"titleText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"plot"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plotText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"plainText"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseYear"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}}]}},{"kind":"Field","name":{"kind":"Name","value":"releaseDate"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"year"}},{"kind":"Field","name":{"kind":"Name","value":"month"}},{"kind":"Field","name":{"kind":"Name","value":"day"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"hasNextPage"}},{"kind":"Field","name":{"kind":"Name","value":"endCursor"}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"countriesOfOrigin"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"countries"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"awardNominations"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1000"}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"isWinner"}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"externalLinks"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"10"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"categories"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"official","block":false}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"label"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"connections"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"categories"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"follows","block":false}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"associatedTitle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<TitleQuery, TitleQueryVariables>;
 export const QueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Query"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"search"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"MainSearchOptions"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"mainSearch"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"20"}},{"kind":"Argument","name":{"kind":"Name","value":"options"},"value":{"kind":"Variable","name":{"kind":"Name","value":"search"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"entity"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"InlineFragment","typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Title"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"titleText"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"text"}}]}},{"kind":"Field","name":{"kind":"Name","value":"primaryImage"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}},{"kind":"Field","name":{"kind":"Name","value":"connections"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"first"},"value":{"kind":"IntValue","value":"1"}},{"kind":"Argument","name":{"kind":"Name","value":"filter"},"value":{"kind":"ObjectValue","fields":[{"kind":"ObjectField","name":{"kind":"Name","value":"categories"},"value":{"kind":"ListValue","values":[{"kind":"StringValue","value":"follows","block":false}]}}]}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"edges"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"node"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"associatedTitle"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}}]}}]}}]}}]}}]}}]}}]}}]}}]}}]}}]} as unknown as DocumentNode<QueryQuery, QueryQueryVariables>;

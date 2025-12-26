@@ -12,7 +12,7 @@
 		"plugins": [
 			{
 				"name": "@0no-co/graphqlsp",
-				"schema": "./schema.graphql"
+				"schema": "./schemas/schema.graphql"
 			}
 		]
 	}

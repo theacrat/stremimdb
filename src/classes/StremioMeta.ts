@@ -150,8 +150,8 @@ export class StremioMeta {
 	}
 
 	private _postInit(): void {
-		// this.background = `https://images.metahub.space/background/medium/${this.id}/img`;
-		// this.logo = `https://images.metahub.space/logo/medium/${this.id}/img`;
+		this.background = `https://images.metahub.space/background/medium/${this.id}/img`;
+		this.logo = `https://images.metahub.space/logo/medium/${this.id}/img`;
 
 		const legacyFields: [string, string[]?][] = [
 			["Genres", this.genres],
