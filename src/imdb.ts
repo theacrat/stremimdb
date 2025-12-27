@@ -7,24 +7,27 @@ import {
 	Title,
 } from "./generated/graphql/graphql";
 import { getImages, matchId } from "./tmdb";
+import type { UserSettings } from "./userSettings";
 import { Client, cacheExchange, fetchExchange } from "@urql/core";
 
-const client = new Client({
-	url: "https://api.graphql.imdb.com/",
-	exchanges: [cacheExchange, fetchExchange],
-	preferGetMethod: false,
-	fetchOptions: () => {
-		return {
-			headers: {
-				"User-Agent":
-					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
-				"Content-Type": "application/json",
-				"x-imdb-user-country": "US",
-				"x-imdb-user-language": "en-US",
-			},
-		};
-	},
-});
+function createClient(languageCode: string) {
+	return new Client({
+		url: "https://api.graphql.imdb.com/",
+		exchanges: [cacheExchange, fetchExchange],
+		preferGetMethod: false,
+		fetchOptions: () => {
+			return {
+				headers: {
+					"User-Agent":
+						"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.3",
+					"Content-Type": "application/json",
+					"x-imdb-user-country": languageCode.split("-")[1] || "US",
+					"x-imdb-user-language": languageCode,
+				},
+			};
+		},
+	});
+}
 
 const GetMoreEpisodesQuery = graphql(`
 	query GetMoreEpisodes($id: ID!, $after: ID!) {
@@ -222,7 +225,7 @@ const TitleFull = graphql(`
 	}
 `);
 
-async function getAllEpisodes(t: Title) {
+async function getAllEpisodes(t: Title, client: Client) {
 	const e = t.episodes?.episodes;
 	if (!e) {
 		return;
@@ -258,12 +261,14 @@ async function getAllEpisodes(t: Title) {
 }
 
 export async function getFullTitle(
+	settings: UserSettings,
 	id: string,
 ): Promise<StremioMeta | undefined> {
+	const client = createClient(settings.languageCode);
 	const cleanId = id.replace(".json", "");
 	const results = await Promise.all([
 		client.query(TitleFull, { id: cleanId }),
-		getImages(cleanId),
+		getImages(settings, cleanId),
 	]);
 
 	const [imdbResults] = results;
@@ -279,14 +284,14 @@ export async function getFullTitle(
 		const connection = title.connections?.edges.find((c) => c)?.node
 			.associatedTitle.id;
 		if (connection) {
-			tmdbResults = await getImages(connection, true);
+			tmdbResults = await getImages(settings, connection, true);
 		}
 	}
 
 	let videos;
 
 	if (title.titleType?.canHaveEpisodes) {
-		await getAllEpisodes(title as Title);
+		await getAllEpisodes(title as Title, client);
 		videos = title.episodes?.episodes?.edges?.flatMap((e) => {
 			if (!e?.node.titleText || !e?.node.releaseDate?.year) {
 				return [];
@@ -449,9 +454,11 @@ const Query = graphql(`
 `);
 
 export async function search(
+	settings: UserSettings,
 	text: string,
 	type: string,
 ): Promise<StremioMeta[]> {
+	const client = createClient(settings.languageCode);
 	const result = await client.query(Query, {
 		search: {
 			type: [MainSearchType.Title],
@@ -477,16 +484,18 @@ export async function search(
 				return [];
 			}
 
-			const connectionId = title.connections?.edges.find((c) => c)?.node
-				.associatedTitle.id;
+			if (settings.hideLowQuality) {
+				const connectionId = title.connections?.edges.find((c) => c)?.node
+					.associatedTitle.id;
 
-			let match = await matchId(title.id, connectionId === undefined);
-			if (!match.find((m) => m) && connectionId) {
-				match = await matchId(connectionId, true);
-			}
+				let match = await matchId(title.id, connectionId === undefined);
+				if (!match.find((m) => m) && connectionId) {
+					match = await matchId(connectionId, true);
+				}
 
-			if (!match.find((m) => m)) {
-				return [];
+				if (!match.find((m) => m)) {
+					return [];
+				}
 			}
 
 			return new StremioMeta({

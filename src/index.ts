@@ -1,11 +1,25 @@
+import { renderHomePage } from "./homePage";
 import { getFullTitle, search } from "./imdb";
+import { manifestJson } from "./manifest";
 // import { instantiatePrisma } from "./prisma";
 import { instantiateTmdb } from "./tmdb";
-import { Hono } from "hono";
+import {
+	type UserSettings,
+	DEFAULT_SETTINGS,
+	decodeSettings,
+} from "./userSettings";
+import { type Context, Hono } from "hono";
 import { env } from "hono/adapter";
 import { cors } from "hono/cors";
 
-const app = new Hono<{ Bindings: CloudflareBindings }>();
+type AppContext = {
+	Bindings: CloudflareBindings;
+	Variables: {
+		settings: UserSettings;
+	};
+};
+
+const app = new Hono<AppContext>();
 const cache = caches.default;
 
 function daysToCacheTime(days: number) {
@@ -50,52 +64,18 @@ app.use("*", async (c, next) => {
 	return await next();
 });
 
-app.get("/manifest.json", (c) => {
-	return c.json({
-		id: "pet.thea.stremimdb",
-		version: "1.0.0",
-		name: "StremIMDb",
-		description: "IMDb metadata in Stremio",
-		logo: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/575px-IMDB_Logo_2016.svg.png",
-		background:
-			"https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IMDB_Logo_2016.svg/575px-IMDB_Logo_2016.svg.png",
-		catalogs: [
-			{
-				type: "movie",
-				id: "search",
-				name: "Movies",
-				extra: [
-					{
-						name: "search",
-						isRequired: true,
-					},
-				],
-			},
-			{
-				type: "series",
-				id: "search",
-				name: "Series",
-				extra: [
-					{
-						name: "search",
-						isRequired: true,
-					},
-				],
-			},
-		],
-		resources: ["catalog", "meta"],
-		types: ["movie", "series"],
-		idPrefixes: ["tt"],
-		behaviorHints: {
-			configurable: false,
-			configurationRequired: false,
-		},
-	});
-});
+const handleHome = (c: Context<AppContext>) => {
+	return c.html(renderHomePage(DEFAULT_SETTINGS));
+};
 
-app.get("/meta/:type{(movie|series)}/:id", async (c) => {
+const handleManifest = (c: Context<AppContext>) => {
+	return c.json(manifestJson);
+};
+
+const handleMeta = async (c: Context<AppContext>) => {
 	const { id } = c.req.param();
-	const result = await getFullTitle(id);
+	const settings = c.get("settings");
+	const result = await getFullTitle(settings, id);
 
 	return withCache(c.req.raw, async () => {
 		return {
@@ -104,11 +84,12 @@ app.get("/meta/:type{(movie|series)}/:id", async (c) => {
 			ttlDays: 7,
 		};
 	});
-});
+};
 
-app.get("/catalog/:type{(movie|series)}/search/:query", async (c) => {
+const handleCatalog = async (c: Context<AppContext>) => {
 	const { type, query } = c.req.param();
-	const result = await search(query, type);
+	const settings = c.get("settings");
+	const result = await search(settings, query, type);
 
 	return withCache(c.req.raw, async () => {
 		return {
@@ -117,6 +98,29 @@ app.get("/catalog/:type{(movie|series)}/search/:query", async (c) => {
 			ttlDays: 7,
 		};
 	});
+};
+
+app.get("/", handleHome);
+
+app.get("/manifest.json", handleManifest);
+app.get("/:settings/manifest.json", handleManifest);
+
+app.get("/meta/:type{(movie|series)}/:id", (c) => {
+	c.set("settings", DEFAULT_SETTINGS);
+	return handleMeta(c);
+});
+app.get("/:settings/meta/:type{(movie|series)}/:id", (c) => {
+	c.set("settings", decodeSettings(c.req.param("settings")));
+	return handleMeta(c);
+});
+
+app.get("/catalog/:type{(movie|series)}/search/:query", (c) => {
+	c.set("settings", DEFAULT_SETTINGS);
+	return handleCatalog(c);
+});
+app.get("/:settings/catalog/:type{(movie|series)}/search/:query", (c) => {
+	c.set("settings", decodeSettings(c.req.param("settings")));
+	return handleCatalog(c);
 });
 
 export default app;

@@ -1,5 +1,6 @@
 // import { getPrisma } from "./prisma";
-import { Images, TMDB } from "tmdb-ts";
+import { type UserSettings } from "./userSettings";
+import { Image, Images, TMDB } from "tmdb-ts";
 
 let tmdb: TMDB;
 
@@ -60,7 +61,35 @@ export async function matchId(imdbId: string, saveOnFail: boolean) {
 	return [movieMatch, tvMatch];
 }
 
-export async function getImages(imdbId: string, saveOnFail: boolean = false) {
+function imageLanguageSorter(languageCode: string) {
+	const primaryLang = languageCode;
+	const fallbackLang = languageCode.split("-")[0];
+	const finalFallback = "en";
+
+	return (a: Image, b: Image) => {
+		const aLang = a.iso_639_1;
+		const bLang = b.iso_639_1;
+
+		if (aLang === bLang) return 0;
+
+		if (aLang === primaryLang) return -1;
+		if (bLang === primaryLang) return 1;
+
+		if (aLang === fallbackLang) return -1;
+		if (bLang === fallbackLang) return 1;
+
+		if (aLang === finalFallback) return -1;
+		if (bLang === finalFallback) return 1;
+
+		return 0;
+	};
+}
+
+export async function getImages(
+	settings: UserSettings,
+	imdbId: string,
+	saveOnFail: boolean = false,
+) {
 	const [movieMatch, tvMatch] = await matchId(imdbId, saveOnFail);
 
 	if (!movieMatch && !tvMatch) {
@@ -79,23 +108,10 @@ export async function getImages(imdbId: string, saveOnFail: boolean = false) {
 		return;
 	}
 
-	images.backdrops.sort((a, b) => {
-		if (a.iso_639_1 === "en" && b.iso_639_1 !== "en") return -1;
-		if (a.iso_639_1 !== "en" && b.iso_639_1 === "en") return 1;
-		return 0;
-	});
-
-	images.logos.sort((a, b) => {
-		if (a.iso_639_1 === "en" && b.iso_639_1 !== "en") return -1;
-		if (a.iso_639_1 !== "en" && b.iso_639_1 === "en") return 1;
-		return 0;
-	});
-
-	images.posters.sort((a, b) => {
-		if (a.iso_639_1 === "en" && b.iso_639_1 !== "en") return -1;
-		if (a.iso_639_1 !== "en" && b.iso_639_1 === "en") return 1;
-		return 0;
-	});
+	const sorter = imageLanguageSorter(settings.languageCode);
+	images.backdrops.sort(sorter);
+	images.logos.sort(sorter);
+	images.posters.sort(sorter);
 
 	return images;
 }
